@@ -8,13 +8,19 @@ import { fileURLToPath } from "url";
 import compression from 'compression';
 import chalk from 'chalk';
 import 'dotenv/config'
-
+import { SocksProxyAgent } from 'socks-proxy-agent';
 
 let port = parseInt(process.env.PORT || "");
 
 if (isNaN(port)) port = 8080;
 
-const bare = createBareServer("/bare/");
+const socksProxyAgent = new SocksProxyAgent(
+    'socks://127.0.0.1:40000'
+);
+const bare = createBareServer("/bare/",{
+    httpAgent: socksProxyAgent,
+    httpsAgent: socksProxyAgent,
+});
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
